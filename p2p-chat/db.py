@@ -50,6 +50,34 @@ class DB:
         self.db["online_peers"].delete_one(acc)
 
     # retrieves the ip address and the port number of the username
+    # New functions for chat rooms
+    def create_chat_room(self, room_id,participants):
+        room = {
+            "room_id": room_id,
+            "participants": participants.split(',')
+        }
+        self.db.chat_rooms.insert_one(room)
+        return room
+    def room_exist(self,room_id):
+       if self.db.chat_rooms.find_one({"room_id": room_id})!=None:
+           return True
+       else:
+            return False
+    def add_participant_to_room(self, room_id, username):
+        self.db.chat_rooms.update_one({"room_id": room_id}, {"$push": {"participants": username}})
+
+    def get_room_participants(self, room_id):
+        room = self.db.chat_rooms.find_one({"room_id": room_id})
+        if room:
+            return room["participants"]
+        else:
+            return []
+
+    def remove_participant_from_room(self, room_id, username):
+        self.db.chat_rooms.update_one({"room_id": room_id}, {"$pull": {"participants": username}})
+
     def get_peer_ip_port(self, username):
         res = self.db.online_peers.find_one({"username": username})
         return (res["ip"], res["port"])
+
+
