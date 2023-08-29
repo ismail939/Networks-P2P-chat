@@ -302,13 +302,14 @@ class peerMain:
         # timer initialization
         self.timer = None
 
+
         choice = "0"
         # log file initialization
         logging.basicConfig(filename="peer.log", level=logging.INFO)
         # as long as the user is not logged out, asks to select an option in the menu
         while choice != "3":
             # menu selection prompt
-            choice = input("Choose: \nCreate account: 1\nLogin: 2\nLogout: 3\nSearch: 4\nStart a chat: 5\n")
+            choice = input("Choose: \nCreate account: 1\nLogin: 2\nLogout: 3\nSearch: 4\nStart a chat: 5\nCreat_Room: 6\nEnter_Room: 7\n")
             # if choice is 1, creates an account with the username
             # and password entered by the user
             if choice == "1":
@@ -326,6 +327,7 @@ class peerMain:
 
                 status = self.login(username, password, peerServerPort)
                 # is user logs in successfully, peer variables are set
+
                 if status == 1:
                     self.isOnline = True
                     self.loginCredentials = (username, password)
@@ -371,6 +373,15 @@ class peerMain:
                                                  self.peerServer, None)
                     self.peerClient.start()
                     self.peerClient.join()
+                      #our_work
+            elif choice =="6"    and self.isOnline:
+                room_id = input("room_id: ")
+                partcipant=input("add all room_particpants seprated by commas : ").split(',')
+                self.createRoom(room_id,partcipant)
+                       # our_work
+            elif choice == "7" and self.isOnline:
+                room_id = input("room_id: ")
+                UserName= input("Enter username: ")
             # if this is the receiver side then it will get the prompt to accept an incoming request during the main loop
             # that's why response is evaluated in main process not the server thread even though the prompt is printed by server
             # if the response is ok then a client is created for this peer with the OK message and that's why it will directly
@@ -399,6 +410,16 @@ class peerMain:
             self.tcpClientSocket.close()
 
     # account creation function
+    def createRoom(self,room_id,particpant):
+        message="CreatROOM "+room_id+" "+",".join(particpant)
+        self.tcpClientSocket.send(message.encode())
+        response = self.tcpClientSocket.recv(1024).decode()
+        if response == "created-success":
+            print("Room created..."+room_id)
+        elif response == "created-fails":
+            print("this room_id already taken...")
+
+
     def createAccount(self, username, password):
         # join message to create an account is composed and sent to registry
         # if response is success then informs the user for account creation
