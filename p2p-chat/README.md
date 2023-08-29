@@ -1,4 +1,4 @@
-# P2P Chat
+# P2P Chat uu
 It is a p2p chat application that uses centralized index approach. It consists of two parts a registry application and a chat application. Registry application keeps track of the peers, and chat application allows peers to communicate with each other.
 * Registry application can achieve following operations:
     * **Account Creation**<br/>
