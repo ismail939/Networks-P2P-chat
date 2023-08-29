@@ -143,9 +143,24 @@ class ClientThread(threading.Thread):
                         response = "search-user-not-found"
                         logging.info("Send to " + self.ip + ":" + str(self.port) + " -> " + response)
                         self.tcpClientSocket.send(response.encode())
+                elif message[0] ==  "CreatROOM":
+                   if db.room_exist(int(message[1])):
+                       response = "created-fails"
+                       print("room already exist-> " + (message[1]) + " " + response)
+                       #logging.info("Send to " + self.ip + ":" + str(self.port) + " -> " + response)
+                       self.tcpClientSocket.send(response.encode())
+                   else:
+                       room =db.create_chat_room(int(message[1]),message[2])
+                       #room["participants"].extend(message[2])
+                       print("room created with room_id"+(message[1]))
+                       response = "created-success"
+                       self.tcpClientSocket.send(response.encode())
+
+
             except OSError as oErr:
                 logging.error("OSError: {0}".format(oErr))
-
+            except ValueError as vErr:
+                logging.error("ValueError: {0}".format(vErr))
                 # function for resettin the timeout for the udp timer thread
 
     def resetTimeout(self):
