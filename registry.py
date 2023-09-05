@@ -9,7 +9,7 @@ import threading
 import select
 import logging
 import db
-import chatroomsdb
+import Roomdb
 import ast
 
 
@@ -27,7 +27,7 @@ class ClientThread(threading.Thread):
         # socket of the peer
         self.tcpClientSocket = tcpClientSocket
         # username, online status and udp server initializations
-        self.username = None
+        self.Username = None
         self.isOnline = True
         self.udpServer = None
         print("New thread started for " + ip + ":" + str(port))
@@ -82,10 +82,10 @@ class ClientThread(threading.Thread):
                         # if password is correct, then peer's thread is added to threads list
                         # peer is added to db with its username, port number, and ip address
                         if retrievedPass == message[2]:
-                            self.username = message[1]
+                            self.Username = message[1]
                             self.lock.acquire()
                             try:
-                                tcpThreads[self.username] = self
+                                tcpThreads[self.Username] = self
                             finally:
                                 self.lock.release()
 
@@ -96,7 +96,7 @@ class ClientThread(threading.Thread):
                             response = "login-success"
                             logging.info("Send to " + self.ip + ":" + str(self.port) + " -> " + response) 
                             self.tcpClientSocket.send(response.encode())
-                            self.udpServer = UDPServer(self.username, self.tcpClientSocket)
+                            self.udpServer = UDPServer(self.Username, self.tcpClientSocket)
                             self.udpServer.start()
                             self.udpServer.timer.start()
                         # if password not matches and then login-wrong-password response is sent
@@ -257,7 +257,7 @@ portUDP = 15500
 
 # db initialization
 
-ChatDB = chatroomsdb.ChatroomsDB()
+ChatDB = Roomdb.ChatroomsDB()
 db = db.DB()
 
 # gets the ip address of this peer
